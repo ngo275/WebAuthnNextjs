@@ -1,24 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import {
-  // Registration
   generateRegistrationOptions,
-  verifyRegistrationResponse,
-  // Authentication
-  generateAuthenticationOptions,
-  verifyAuthenticationResponse,
 } from '@simplewebauthn/server';
 import type {
   GenerateRegistrationOptionsOpts,
-  GenerateAuthenticationOptionsOpts,
-  VerifyRegistrationResponseOpts,
-  VerifyAuthenticationResponseOpts,
-  VerifiedRegistrationResponse,
-  VerifiedAuthenticationResponse,
 } from '@simplewebauthn/server';
 import type {
-  RegistrationCredentialJSON,
-  AuthenticationCredentialJSON,
-  AuthenticatorDevice,
   PublicKeyCredentialCreationOptionsJSON,
 } from '@simplewebauthn/typescript-types';
 import { PrismaClient } from '@prisma/client'
@@ -32,26 +19,20 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<PublicKeyCredentialCreationOptionsJSON>
 ) {
-  // const user = inMemoryUserDeviceDB[loggedInUserId];
-  const body = req.body;
-  console.log(body);
+  const q = req.query;
+  const email: string = q.email as string
+  if (!email) {
+    // @ts-ignore
+    return res.status(400).send("Email is empty")
+  }
 
-  // const {
-  //   /**
-  //    * The username can be a human-readable name, email, etc... as it is intended only for display.
-  //    */
-  //   username,
-  //   devices,
-  // } = user;
-
-  const username = "test.com"
   const devices: object[] = []
 
   const opts: GenerateRegistrationOptionsOpts = {
     rpName: RP_NAME,
     rpID: RP_ID,
-    userID: "test",
-    userName: username,
+    userID: email,
+    userName: email,
     timeout: 60000,
     attestationType: 'indirect',
     /**
@@ -85,31 +66,20 @@ export default async function handler(
 
   const options = generateRegistrationOptions(opts);
 
-  // await db.save({
-  //   key: db.key("options"),
-  //   data: options,
-  //   excludeFromIndexes: ["pubKeyCredParams", "timeout"],
-  // });
-
-  const newRequest = await prisma.authRequest.create({
-    data: {
-      challenge: options.challenge,
-      // @ts-ignore
-      rpId: RP_ID,
-      rpName: RP_NAME,
-      email: "test@yopmail.com"
-    },
-  })
-
-  /**
-   * The server needs to temporarily remember this value for verification, so don't lose it until
-   * after you verify an authenticator response.
-   */
-  // inMemoryUserDeviceDB[loggedInUserId].currentChallenge = options.challenge;
+  try {
+    const newRequest = await prisma.authRequest.create({
+      data: {
+        challenge: options.challenge,
+        // @ts-ignore
+        rpId: RP_ID,
+        rpName: RP_NAME,
+        email
+      },
+    })
+  } catch (e) {
+    // @ts-ignore
+    res.status(500).send("Writing database failed")
+  }
 
   res.send(options);
-
-  // return res.status(200).json({})
-
-  // res.status(200).json({ name: 'John Doe' })
 }

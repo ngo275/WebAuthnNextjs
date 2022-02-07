@@ -1,25 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import {
-  // Registration
-  generateRegistrationOptions,
   verifyRegistrationResponse,
-  // Authentication
-  generateAuthenticationOptions,
-  verifyAuthenticationResponse,
 } from '@simplewebauthn/server';
 import type {
-  GenerateRegistrationOptionsOpts,
-  GenerateAuthenticationOptionsOpts,
   VerifyRegistrationResponseOpts,
-  VerifyAuthenticationResponseOpts,
   VerifiedRegistrationResponse,
-  VerifiedAuthenticationResponse,
 } from '@simplewebauthn/server';
 import type {
   RegistrationCredentialJSON,
-  AuthenticationCredentialJSON,
-  AuthenticatorDevice,
-  PublicKeyCredentialCreationOptionsJSON,
 } from '@simplewebauthn/typescript-types';
 import { PrismaClient } from '@prisma/client'
 import { RP_NAME, RP_ID } from "../../../utils/constants"
@@ -29,15 +17,21 @@ const prisma = new PrismaClient();
 // let expectedOrigin = `https://${RP_ID}`;
 let expectedOrigin = `http://localhost:3000`;
 
+interface Request extends RegistrationCredentialJSON {
+  email: string
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<{ verified: boolean }>
 ) {
-  const body: RegistrationCredentialJSON = req.body;
+  const body: Request = req.body;
+  const email = body.email;
 
-  const email = "test@yopmail.com"
-  // const user = {}
-  // const user = inMemoryUserDeviceDB[loggedInUserId];
+  if (!email) {
+    // @ts-ignore
+    return res.status(400).send("Request body is not valid")
+  }
 
   const option = await prisma.authRequest.findFirst({
     orderBy: [
@@ -49,7 +43,6 @@ export default async function handler(
       email
     }
   })
-  console.log(option)
 
   // @ts-ignore
   const expectedChallenge = option.challenge;
@@ -65,9 +58,8 @@ export default async function handler(
     verification = await verifyRegistrationResponse(opts);
   } catch (error) {
     const _error = error as Error;
-    console.error(_error);
     // @ts-ignore
-    return res.status(400).json({ error: _error.message });
+    return res.status(400).send(_error.message);
   }
 
   const { verified, registrationInfo } = verification;
@@ -82,16 +74,21 @@ export default async function handler(
       transports: body.transports
     }
 
-    const a = await prisma.user.create({
-      data: {
-        email,
-        devices: {
-          create: [
-            newDeviceObj
-          ]
+    try {
+      await prisma.user.create({
+        data: {
+          email,
+          devices: {
+            create: [
+              newDeviceObj
+            ]
+          }
         }
-      }
-    })
+      })
+    } catch (e) {
+      // @ts-ignore
+      return res.status(500).send(e.message)
+    }
   }
 
   res.send({ verified });
