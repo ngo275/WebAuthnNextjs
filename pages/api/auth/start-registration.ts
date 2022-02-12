@@ -41,13 +41,13 @@ export default async function handler(
      * the browser if it's asked to perform registration when one of these ID's already resides
      * on it.
      */
-    excludeCredentials: devices.map(dev => ({
+    // excludeCredentials: devices.map(dev => ({
+    //   @ts-ignore
+      // id: dev.credentialID,
+      // type: 'public-key',
       // @ts-ignore
-      id: dev.credentialID,
-      type: 'public-key',
-      // @ts-ignore
-      transports: dev.transports,
-    })),
+      // transports: dev.transports,
+    // })),
     /**
      * The optional authenticatorSelection property allows for specifying more constraints around
      * the types of authenticators that users to can use for registration
@@ -70,7 +70,6 @@ export default async function handler(
     const newRequest = await prisma.authRequest.create({
       data: {
         challenge: options.challenge,
-        // @ts-ignore
         rpId: RP_ID,
         rpName: RP_NAME,
         email

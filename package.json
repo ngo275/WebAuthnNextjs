@@ -14,6 +14,7 @@
     "@simplewebauthn/browser": "^4.1.0",
     "@simplewebauthn/server": "^4.3.0",
     "antd": "^4.18.5",
+    "base64url": "^3.0.1",
     "next": "12.0.10",
     "next-transpile-modules": "^9.0.0",
     "react": "17.0.2",

@@ -9,7 +9,8 @@ import type {
 import type {
   RegistrationCredentialJSON,
 } from '@simplewebauthn/typescript-types';
-import { PrismaClient } from '@prisma/client'
+import base64url from "base64url";
+import {AuthRequest, PrismaClient } from '@prisma/client'
 import { RP_NAME, RP_ID } from "../../../utils/constants"
 
 const prisma = new PrismaClient();
@@ -33,7 +34,7 @@ export default async function handler(
     return res.status(400).send("Request body is not valid")
   }
 
-  const option = await prisma.authRequest.findFirst({
+  const option: AuthRequest | null = await prisma.authRequest.findFirst({
     orderBy: [
       {
         createdAt: 'desc'
@@ -44,7 +45,11 @@ export default async function handler(
     }
   })
 
-  // @ts-ignore
+  if (!option) {
+    // @ts-ignore
+    return res.status(400).send("Thre is no pregenerated challege")
+  }
+
   const expectedChallenge = option.challenge;
 
   let verification: VerifiedRegistrationResponse;
@@ -68,8 +73,8 @@ export default async function handler(
     const { credentialPublicKey, credentialID, counter } = registrationInfo;
 
     const newDeviceObj = {
-      publicKey: credentialPublicKey.toString("base64"),
-      credId: credentialID.toString("base64"),
+      publicKey: base64url(credentialPublicKey),
+      credId: base64url(credentialID),
       counter,
       transports: body.transports
     }
