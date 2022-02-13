@@ -1,2 +1,4 @@
-DATABASE_URL=""
-SHADOW_DATABASE_URL=""
+RP_ID=localhost
+ORIGIN="http://localhost:3000"
+DATABASE_URL="postgres://xxxxxxxx:xxxxxxxxxx@ec2-52-4-100-65.compute-1.amazonaws.com:5432/xxxxxxxxxx"
+SHADOW_DATABASE_URL="postgresql://postgres:password@localhost:5432/postgres?schema=public"
