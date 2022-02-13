@@ -1,9 +1,9 @@
-import { notification, Button, Input, Form, Spin, Layout, Row, Col, Typography } from 'antd'
+import { notification, Button, Input, Form, Spin, Layout, Row, Col, Typography } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import {useState} from "react";
-import type { NextPage } from 'next'
-import Link from 'next/link'
-import { startRegistration } from "@simplewebauthn/browser"
+import type { NextPage } from 'next';
+import Link from 'next/link';
+import { startRegistration } from "@simplewebauthn/browser";
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 const { Header, Footer, Content } = Layout;
@@ -41,7 +41,7 @@ const Home: NextPage = () => {
       </Content>
       <Footer style={{ textAlign: 'center' }}>Source code - <a href="https://github.com/ngo275/WebAuthnNextjs" target="_blank" rel="noreferrer">GitHub</a></Footer>
     </Layout>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

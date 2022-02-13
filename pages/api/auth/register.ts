@@ -1,4 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next';
 import {
   verifyRegistrationResponse,
 } from '@simplewebauthn/server';
@@ -10,13 +10,12 @@ import type {
   RegistrationCredentialJSON,
 } from '@simplewebauthn/typescript-types';
 import base64url from "base64url";
-import {AuthRequest, PrismaClient } from '@prisma/client'
-import { RP_NAME, RP_ID } from "../../../utils/constants"
+import {AuthRequest, PrismaClient } from '@prisma/client';
+import {RP_ID, ORIGIN} from "../../../utils/constants";
 
 const prisma = new PrismaClient();
 
-// let expectedOrigin = `https://${RP_ID}`;
-let expectedOrigin = `http://localhost:3000`;
+let expectedOrigin = ORIGIN;
 
 interface Request extends RegistrationCredentialJSON {
   email: string
@@ -31,7 +30,7 @@ export default async function handler(
 
   if (!email) {
     // @ts-ignore
-    return res.status(400).send("Request body is not valid")
+    return res.status(400).send("Request body is not valid");
   }
 
   const option: AuthRequest | null = await prisma.authRequest.findFirst({
@@ -43,11 +42,11 @@ export default async function handler(
     where: {
       email
     }
-  })
+  });
 
   if (!option) {
     // @ts-ignore
-    return res.status(400).send("Thre is no pregenerated challege")
+    return res.status(400).send("Thre is no pregenerated challege");
   }
 
   const expectedChallenge = option.challenge;
@@ -77,7 +76,7 @@ export default async function handler(
       credId: base64url(credentialID),
       counter,
       transports: body.transports
-    }
+    };
 
     try {
       await prisma.user.create({
@@ -89,10 +88,10 @@ export default async function handler(
             ]
           }
         }
-      })
+      });
     } catch (e) {
       // @ts-ignore
-      return res.status(500).send(e.message)
+      return res.status(500).send(e.message);
     }
   }
 

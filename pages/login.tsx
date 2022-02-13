@@ -1,14 +1,14 @@
-import { notification, Button, Input, Form, Spin, Layout, Row, Col, Typography } from 'antd'
+import { notification, Button, Input, Form, Spin, Layout, Row, Col, Typography } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import {useState} from "react";
-import type { NextPage } from 'next'
-import { startAuthentication } from "@simplewebauthn/browser"
+import type { NextPage } from 'next';
+import { startAuthentication } from "@simplewebauthn/browser";
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 const { Header, Footer, Content } = Layout;
 
 const LoginPage: NextPage = () => {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 
   const openNotification = (message: string, success?: boolean) => {
@@ -33,8 +33,8 @@ const LoginPage: NextPage = () => {
 
   const onFinish = (values: any) => {
     console.log('Received values of form: ', values);
-    const email = values["email"] as string
-    handleStart(email)
+    const email = values["email"] as string;
+    handleStart(email);
   };
 
   const handleStart = (email: string) => {
@@ -42,7 +42,7 @@ const LoginPage: NextPage = () => {
     fetch(`api/auth/start-login?email=${email}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log(data)
+        console.log(data);
         startAuthentication(data)
           .then((attRes) => {
             fetch('api/auth/login', {
@@ -54,29 +54,29 @@ const LoginPage: NextPage = () => {
             })
               .then((res) => res.json())
               .then((result) => {
-                console.log(result)
-                setLoading(false)
-                openNotification("Your account has been successfully authenticated", true)
+                console.log(result);
+                setLoading(false);
+                openNotification("Your account has been successfully authenticated", true);
               })
               .catch((e) => {
-                console.log(e)
-                setLoading(false)
-                openNotification("Login failed")
-              })
+                console.log(e);
+                setLoading(false);
+                openNotification("Login failed");
+              });
           })
           .catch((e) => {
-            console.log(e)
-            setLoading(false)
-            openNotification("Authentication with your security key failed")
-          })
+            console.log(e);
+            setLoading(false);
+            openNotification("Authentication with your security key failed");
+          });
       })
       .catch((e) => {
-        console.log(e)
-        setLoading(false)
-        openNotification("Failed preparing for authentication")
+        console.log(e);
+        setLoading(false);
+        openNotification("Failed preparing for authentication");
         // openNotification(e.message)
-      })
-  }
+      });
+  };
 
   return (
     <Spin indicator={antIcon} spinning={loading}>
@@ -125,7 +125,7 @@ const LoginPage: NextPage = () => {
         <Footer style={{ textAlign: 'center' }}>Source code - <a href="https://github.com/ngo275/WebAuthnNextjs" target="_blank" rel="noreferrer">GitHub</a></Footer>
       </Layout>
     </Spin>
-  )
-}
+  );
+};
 
-export default LoginPage
+export default LoginPage;

@@ -1,4 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next';
 import {
   generateAuthenticationOptions,
   GenerateAuthenticationOptionsOpts,
@@ -6,23 +6,21 @@ import {
 import type {
   PublicKeyCredentialRequestOptionsJSON,
 } from '@simplewebauthn/typescript-types';
-import { PrismaClient, Prisma, User, Device } from '@prisma/client'
-import { RP_NAME, RP_ID } from "../../../utils/constants"
+import { PrismaClient, Prisma, User, Device } from '@prisma/client';
+import { RP_NAME, RP_ID } from "../../../utils/constants";
 import {Buffer} from "buffer";
 
 const prisma = new PrismaClient();
-
-// let expectedOrigin = `https://${RP_ID}`;
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<PublicKeyCredentialRequestOptionsJSON>
 ) {
   const q = req.query;
-  const email: string = q.email as string
+  const email: string = q.email as string;
   if (!email) {
     // @ts-ignore
-    return res.status(400).send("Email is empty")
+    return res.status(400).send("Email is empty");
   }
 
   const user: (User & { devices: Device[] }) | null = await prisma.user.findFirst({
@@ -37,11 +35,11 @@ export default async function handler(
     where: {
       email
     }
-  })
+  });
 
   if (!user) {
     // @ts-ignore
-    return res.status(400).send("This email is not used")
+    return res.status(400).send("This email is not used");
     // return res.status(400).send({ error: "This email is not used" })
   }
 
@@ -70,10 +68,10 @@ export default async function handler(
         rpName: RP_NAME,
         email
       },
-    })
+    });
   } catch (e) {
     // @ts-ignore
-    res.status(500).send("Writing database failed")
+    res.status(500).send("Writing database failed");
   }
 
   res.send(options);

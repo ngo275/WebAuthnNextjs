@@ -6,6 +6,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "lint:fix": "eslint pages --ext .js,jsx,.ts,.tsx --fix",
     "db:pull": "yarn prisma db pull",
     "db:generate-client": "yarn prisma generate"
   },
@@ -25,7 +26,7 @@
     "@simplewebauthn/typescript-types": "^4.0.0",
     "@types/node": "17.0.14",
     "@types/react": "17.0.39",
-    "eslint": "7.14.0",
+    "eslint": "7.21",
     "eslint-config-next": "12.0.10",
     "prisma": "^3.9.1",
     "typescript": "4.5.5"

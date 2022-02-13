@@ -1,4 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next';
 import base64url from 'base64url';
 import {
   verifyAuthenticationResponse,
@@ -10,15 +10,13 @@ import type {
 import type {
   AuthenticationCredentialJSON,
 } from '@simplewebauthn/typescript-types';
-import {AuthRequest, Device, PrismaClient, User} from '@prisma/client'
-import { RP_NAME, RP_ID } from "../../../utils/constants"
+import {AuthRequest, Device, PrismaClient, User} from '@prisma/client';
+import {RP_ID, ORIGIN} from "../../../utils/constants";
 import {VerifiedAuthenticationResponse} from "@simplewebauthn/server/dist/authentication/verifyAuthenticationResponse";
-import {AuthenticatorTransport} from "@simplewebauthn/typescript-types/dist/dom";
 
 const prisma = new PrismaClient();
 
-// let expectedOrigin = `https://${RP_ID}`;
-let expectedOrigin = `http://localhost:3000`;
+let expectedOrigin = ORIGIN;
 
 interface Request extends AuthenticationCredentialJSON {
   email: string
@@ -33,7 +31,7 @@ export default async function handler(
 
   if (!email) {
     // @ts-ignore
-    return res.status(400).send("Request body is not valid")
+    return res.status(400).send("Request body is not valid");
   }
 
   const option: AuthRequest | null = await prisma.authRequest.findFirst({
@@ -45,11 +43,11 @@ export default async function handler(
     where: {
       email
     }
-  })
+  });
 
   if (!option) {
     // @ts-ignore
-    return res.status(400).send("There is no pregenerated challenge")
+    return res.status(400).send("There is no pregenerated challenge");
   }
 
   const expectedChallenge = option.challenge;
@@ -66,17 +64,17 @@ export default async function handler(
     where: {
       email
     }
-  })
+  });
 
   if (!user) {
     // @ts-ignore
-    return res.status(400).send("This email is not used")
+    return res.status(400).send("This email is not used");
     // return res.status(400).send({ error: "This email is not used" })
   }
 
   let dbAuthenticator: Device | undefined;
   // const bodyCredIDBuffer = base64url.toBuffer(body.rawId);
-  const credId = body.rawId
+  const credId = body.rawId;
   for (const dev of user.devices) {
     if (dev.credId === credId) {
       dbAuthenticator = dev;
@@ -86,7 +84,7 @@ export default async function handler(
 
   if (!dbAuthenticator) {
     // @ts-ignore
-    return res.status(400).send("Device is not registered")
+    return res.status(400).send("Device is not registered");
   }
 
   let verification: VerifiedAuthenticationResponse;
@@ -122,10 +120,10 @@ export default async function handler(
           ...dbAuthenticator,
           counter: authenticationInfo.newCounter
         }
-      })
+      });
     } catch (e) {
       // @ts-ignore
-      return res.status(500).send(e.message)
+      return res.status(500).send(e.message);
     }
   }
 

@@ -1,4 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next';
 import {
   generateRegistrationOptions,
 } from '@simplewebauthn/server';
@@ -8,25 +8,23 @@ import type {
 import type {
   PublicKeyCredentialCreationOptionsJSON,
 } from '@simplewebauthn/typescript-types';
-import { PrismaClient } from '@prisma/client'
-import { RP_NAME, RP_ID } from "../../../utils/constants"
+import { PrismaClient } from '@prisma/client';
+import { RP_NAME, RP_ID } from "../../../utils/constants";
 
 const prisma = new PrismaClient();
-
-// let expectedOrigin = `https://${RP_ID}`;
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<PublicKeyCredentialCreationOptionsJSON>
 ) {
   const q = req.query;
-  const email: string = q.email as string
+  const email: string = q.email as string;
   if (!email) {
     // @ts-ignore
-    return res.status(400).send("Email is empty")
+    return res.status(400).send("Email is empty");
   }
 
-  const devices: object[] = []
+  const devices: object[] = [];
 
   const opts: GenerateRegistrationOptionsOpts = {
     rpName: RP_NAME,
@@ -74,10 +72,10 @@ export default async function handler(
         rpName: RP_NAME,
         email
       },
-    })
+    });
   } catch (e) {
     // @ts-ignore
-    res.status(500).send("Writing database failed")
+    res.status(500).send("Writing database failed");
   }
 
   res.send(options);

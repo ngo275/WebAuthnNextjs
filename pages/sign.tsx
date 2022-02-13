@@ -1,8 +1,8 @@
-import { notification, Button, Input, Form, Spin, Layout, Row, Col, Typography } from 'antd'
+import { notification, Button, Input, Form, Spin, Layout, Row, Col } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import {useState} from "react";
-import type { NextPage } from 'next'
-import { startAuthentication } from "@simplewebauthn/browser"
+import type { NextPage } from 'next';
+import { startAuthentication } from "@simplewebauthn/browser";
 import { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types';
 import {RP_ID} from "../utils/constants";
 import base64url from "base64url";
@@ -11,7 +11,7 @@ const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 const { Header, Footer, Content } = Layout;
 
 const SignPage: NextPage = () => {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 
   const openNotification = (message: string, success?: boolean) => {
@@ -36,15 +36,14 @@ const SignPage: NextPage = () => {
 
   const onFinish = (values: any) => {
     console.log('Received values of form: ', values);
-    const message = values["message"] as string
-    handleStart(message)
+    const message = values["message"] as string;
+    handleStart(message);
   };
 
   const handleStart = (message: string) => {
     setLoading(true);
 
-    const challenge = base64url(message)
-    // @ts-ignore
+    const challenge = base64url(message);
     const option: PublicKeyCredentialRequestOptionsJSON = {
       challenge,
       allowCredentials: [
@@ -57,18 +56,18 @@ const SignPage: NextPage = () => {
       rpId: RP_ID,
       timeout: 60000,
       userVerification: "preferred"
-    }
+    };
     startAuthentication(option)
       .then((attRes) => {
-        console.log(attRes.response.signature)
+        console.log(attRes.response.signature);
       })
       .catch((e) => {
-        console.log(e)
-        setLoading(false)
-        openNotification("Signing failed")
+        console.log(e);
+        setLoading(false);
+        openNotification("Signing failed");
         // openNotification(e.message)
-      })
-  }
+      });
+  };
 
   return (
     <Spin indicator={antIcon} spinning={loading}>
@@ -113,7 +112,7 @@ const SignPage: NextPage = () => {
         <Footer style={{ textAlign: 'center' }}>Source code - <a href="https://github.com/ngo275/WebAuthnNextjs" target="_blank" rel="noreferrer">GitHub</a></Footer>
       </Layout>
     </Spin>
-  )
-}
+  );
+};
 
-export default SignPage
+export default SignPage;

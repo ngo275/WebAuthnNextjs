@@ -1,14 +1,14 @@
-import { notification, Button, Input, Form, Spin, Layout, Row, Col, Typography } from 'antd'
+import { notification, Button, Input, Form, Spin, Layout, Row, Col, Typography } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import {useState} from "react";
-import type { NextPage } from 'next'
-import { startRegistration } from "@simplewebauthn/browser"
+import type { NextPage } from 'next';
+import { startRegistration } from "@simplewebauthn/browser";
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 const { Header, Footer, Content } = Layout;
 
 const RegistrationPage: NextPage = () => {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 
   const openNotification = (message: string, success?: boolean) => {
@@ -33,8 +33,8 @@ const RegistrationPage: NextPage = () => {
 
   const onFinish = (values: any) => {
     console.log('Received values of form: ', values);
-    const email = values["email"] as string
-    handleStart(email)
+    const email = values["email"] as string;
+    handleStart(email);
   };
 
   const handleStart = (email: string) => {
@@ -42,7 +42,7 @@ const RegistrationPage: NextPage = () => {
     fetch(`api/auth/start-registration?email=${email}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log(data)
+        console.log(data);
         startRegistration(data)
           .then((attRes) => {
             fetch('api/auth/register', {
@@ -54,28 +54,28 @@ const RegistrationPage: NextPage = () => {
             })
               .then((res) => res.json())
               .then((result) => {
-                console.log(result)
-                setLoading(false)
-                openNotification("Your account has been successfully registered", true)
+                console.log(result);
+                setLoading(false);
+                openNotification("Your account has been successfully registered", true);
               })
               .catch((e) => {
-                console.log(e)
-                setLoading(false)
-                openNotification("Registration failed")
-              })
+                console.log(e);
+                setLoading(false);
+                openNotification("Registration failed");
+              });
           })
           .catch((e) => {
-            console.log(e)
-            setLoading(false)
-            openNotification("Authentication with your security key failed")
-          })
+            console.log(e);
+            setLoading(false);
+            openNotification("Authentication with your security key failed");
+          });
       })
       .catch((e) => {
-        console.log(e)
-        setLoading(false)
-        openNotification("Failed preparing for registration")
-      })
-  }
+        console.log(e);
+        setLoading(false);
+        openNotification("Failed preparing for registration");
+      });
+  };
 
   return (
     <Spin indicator={antIcon} spinning={loading}>
@@ -124,7 +124,7 @@ const RegistrationPage: NextPage = () => {
         <Footer style={{ textAlign: 'center' }}>Source code - <a href="https://github.com/ngo275/WebAuthnNextjs" target="_blank" rel="noreferrer">GitHub</a></Footer>
       </Layout>
     </Spin>
-  )
-}
+  );
+};
 
-export default RegistrationPage
+export default RegistrationPage;
